@@ -1,0 +1,61 @@
+/* .Calendar {
+    text-align: center;
+  }
+  
+  table {
+    margin: 20px auto;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  th {
+    background-color: #f2f2f2;
+  }
+  
+  td input {
+    margin: 0;
+  }
+   */
+
+
+   .Calendar {
+    text-align: center;
+  }
+  
+  button {
+    background-color: #4CAF50; /* Green background */
+    color: white; /* White text */
+    padding: 10px 20px; /* Some padding */
+    border: none; /* Remove borders */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Pointer/hand icon on hover */
+  }
+  
+  button:hover {
+    background-color: #45a049; /* Darker green background on hover */
+  }
+  
+  table {
+    margin: 20px auto;
+    border-collapse: collapse;
+    text-align: left; /* Align text to the left */
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  th {
+    background-color: #4CAF50; /* Green background for headers */
+    color: white; /* White text for headers */
+  }
+  
+  td input {
+    margin: 0;
+  }
+  
