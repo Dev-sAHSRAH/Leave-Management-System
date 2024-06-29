@@ -9,9 +9,19 @@
   "author": "Harsha & Vaishnavi",
   "license": "ISC",
   "dependencies": {
+    "@azure/msal-node": "^2.9.2",
+    "axios": "^1.7.2",
     "body-parser": "^1.20.2",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "debug": "^4.3.5",
     "dotenv": "^16.4.5",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "http-errors": "^2.0.0",
+    "morgan": "^1.10.0",
+    "passport": "^0.7.0",
+    "passport-azure-ad": "^4.3.5"
   },
   "devDependencies": {
     "nodemon": "^3.1.4"
