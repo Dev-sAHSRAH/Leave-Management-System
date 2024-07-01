@@ -1,35 +1,52 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Home } from "./components/Home";
+import Calendar from "./pages/Calendar";
 
-function App() {
-  const [count, setCount] = useState(0)
+import {
+  AuthenticatedTemplate,
+  UnauthenticatedTemplate,
+} from "@azure/msal-react";
+import "./App.css";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Form from "./pages/Form";
+import Footer from "./components/Footer/Footer";
+import { ProfileContent } from "./pages/Profile";
 
+/**
+ * Renders information about the signed-in user or a button to retrieve data about the user
+ */
+
+// /**
+//  * If a user is authenticated the ProfileContent component above is rendered. Otherwise a message indicating a user is not authenticated is rendered.
+//  */
+// const MainContent = () => {
+//   return (
+//     <div className="App">
+//       <AuthenticatedTemplate>
+//         <ProfileContent />
+//         <Home />
+//       </AuthenticatedTemplate>
+
+//       <UnauthenticatedTemplate>
+//         <h5 className="card-title">
+//           Please sign-in to see your profile information.
+//         </h5>
+//       </UnauthenticatedTemplate>
+//     </div>
+//   );
+// };
+
+export default function App() {
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/calendar" element={<Calendar />} />
+          <Route path="/form" element={<Form />} />
+          <Route path="/profile" element={<ProfileContent />} />
+        </Routes>
+        <Footer />
+      </BrowserRouter>
     </>
-  )
+  );
 }
-
-export default App

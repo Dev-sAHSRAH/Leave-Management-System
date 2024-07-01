@@ -4,8 +4,6 @@ const authRouter = require("./auth.routes");
 const { isAuthenticated } = require("../../middlewares");
 const v1Router = express.Router();
 
-// console.log(isAuthenticated);
-
 v1Router.get("/", isAuthenticated, function (req, res, next) {
   const response = {
     title: "Auth Check",

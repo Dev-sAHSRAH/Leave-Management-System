@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const createError = require("http-errors");
+const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const session = require("express-session");
@@ -9,6 +10,12 @@ const { PORT } = require("./config/server.config");
 const apiRouter = require("./routes");
 const app = express();
 
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 app.use(logger("dev"));
 app.use(cookieParser());
 app.use(bodyParser.json());
