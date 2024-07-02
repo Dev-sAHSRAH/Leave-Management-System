@@ -3,7 +3,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./Test.css";
 import { useIsAuthenticated, useMsal } from "@azure/msal-react";
- 
+
 const Test = () => {
   const { accounts } = useMsal();
   const [startDate, setStartDate] = useState(new Date());
@@ -18,18 +18,18 @@ const Test = () => {
   useEffect(() => {
     generateAttendanceTable(startDate);
   }, [startDate]);
- 
+
   const generateAttendanceTable = (date) => {
     const month = date.getMonth() + 1;
     const year = date.getFullYear();
     const daysInMonth = new Date(year, month, 0).getDate();
     const table = [];
- 
+
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(year, month - 1, day);
       const dayName = date.toLocaleDateString("en-US", { weekday: "short" });
       const isWeekend = date.getDay() === 0 || date.getDay() === 6;
- 
+
       table.push({
         day: dayName,
         date: `${day}-${month}-${year}`,
@@ -37,26 +37,23 @@ const Test = () => {
         isWeekend: isWeekend,
       });
     }
- 
+
     setAttendance(table);
   };
- 
-  //   console.log("attendance", attendance);
- 
+
   const handleRangeChange = () => {
     const from = new Date(fromDate);
     const to = new Date(toDate);
- 
+
     // const start = +fromDate.split("-")[2];
     // const end = +toDate.split("-")[2];
- 
+
     if (from > to) {
       alert("From date should be earlier than To date");
       return;
     }
- 
+
     const newAttendance = [...attendance];
-    // console.log("new", newAttendance);
 
     const start = from.getDate();
     const end = to.getDate();
@@ -79,27 +76,23 @@ const Test = () => {
     // for (let i = 0; i < newAttendance.length; i++) {
     //   const dateParts = newAttendance[i].date.split("-");
     //   const current = +dateParts[0];
- 
-    //   //   console.log(current);
- 
+
     //   if (current >= start && current <= end && !newAttendance[i].isWeekend) {
     //     newAttendance[i].attendance = selection;
     //   }
     // }
- 
+
     setAttendance(newAttendance);
     setMorningTimeAllowanceCount(morningCount);
     setAfternoonTimeAllowanceCount(afternoonCount);
-
-    
   };
- 
+
   const handleAttendanceChange = (index, value) => {
     const newAttendance = [...attendance];
     newAttendance[index].attendance = value;
     setAttendance(newAttendance);
   };
- 
+
   const handleMonthChange = (date) => {
     setStartDate(date);
     setFromDate("");
@@ -108,16 +101,16 @@ const Test = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/test",{
-        method : "POST" ,
-        headers : {
-          "Content-Type" : "application/json"
+      const response = await fetch("http://localhost:3000/api/test", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           email: accounts[0].username,
           morningTimeAllowanceCount,
           afternoonTimeAllowanceCount,
-          attendance 
+          attendance,
         }),
       });
 
@@ -126,13 +119,11 @@ const Test = () => {
       }
 
       console.log("Attendance data submitted successfully");
-    }
-    catch(err)
-    {
-      console.error("Error submitting attendance data:",err);
+    } catch (err) {
+      console.error("Error submitting attendance data:", err);
     }
   };
- 
+
   return (
     <div>
       <div>
@@ -211,11 +202,10 @@ const Test = () => {
     </div>
   );
 };
- 
 
 const SummaryTable = ({
   morningTimeAllowanceCount,
-  afternoonTimeAllowanceCount
+  afternoonTimeAllowanceCount,
 }) => {
   return (
     <table>

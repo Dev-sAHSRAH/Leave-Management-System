@@ -6,7 +6,7 @@ import {
   UnauthenticatedTemplate,
 } from "@azure/msal-react";
 import "./App.css";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import Form from "./pages/Form";
 import Footer from "./components/Footer/Footer";
 import { ProfileContent } from "./pages/Profile";
@@ -37,19 +37,27 @@ import Test from "./pages/Test";
 //   );
 // };
 
-export default function App() {
+const App = () => {
+  const location = useLocation();
+
   return (
     <>
-      <BrowserRouter>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/calendar" element={<Test />} />
-          <Route path="/form" element={<Form />} />
-          <Route path="/profile" element={<ProfileContent />} />
-        </Routes>
-        {/* <Footer /> */}
-      </BrowserRouter>
+      {location.pathname !== "/" && <Navbar />}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/calendar" element={<Test />} />
+        <Route path="/form" element={<Form />} />
+        <Route path="/profile" element={<ProfileContent />} />
+      </Routes>
+      <Footer />
     </>
   );
-}
+};
+
+const Root = () => (
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+);
+
+export default Root;
