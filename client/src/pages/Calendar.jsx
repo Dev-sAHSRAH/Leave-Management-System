@@ -10,7 +10,6 @@ const Home = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [dates, setDates] = useState([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [nightTimeAllowanceCount, setNightTimeAllowanceCount] = useState(0);
   const [morningTimeAllowanceCount, setMorningTimeAllowanceCount] = useState(0);
   const [afternoonTimeAllowanceCount, setAfternoonTimeAllowanceCount] =
     useState(0);
@@ -26,11 +25,15 @@ const Home = () => {
     generateDates(new Date());
   }, []);
 
+
   const handleMonthChange = (date) => {
     console.log("Selected date:", date);
     setStartDate(date);
     generateDates(date);
     setShowDatePicker(false);
+    uncheckAllCheckboxes();
+    setMorningTimeAllowanceCount(0);
+    setAfternoonTimeAllowanceCount(0);
   };
 
   const generateDates = (date) => {
@@ -46,7 +49,13 @@ const Home = () => {
     setDates(newDates);
   };
 
-  const handleCheckboxChange = (e, type) => {
+  const uncheckAllCheckboxes = () => {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach((checkbox) => {
+      checkbox.checked = false;
+    });
+  };
+  const handleCheckboxChange = (e, type , date) => {
     const checked = e.target.checked;
 
     if (type === "morning") {
@@ -57,10 +66,32 @@ const Home = () => {
       setAfternoonTimeAllowanceCount((prevCount) =>
         checked ? prevCount + 1 : prevCount - 1
       );
-    } else if (type === "night") {
-      setNightTimeAllowanceCount((prevCount) =>
-        checked ? prevCount + 1 : prevCount - 1
-      );
+    } 
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/attendance",{
+        method : "POST" ,
+        headers : {
+          "Content-Type" : "application/json"
+        },
+        body: JSON.stringify({
+          email: accounts[0].username,
+          morningTimeAllowanceCount,
+          afternoonTimeAllowanceCount
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to submit attendance data");
+      }
+
+      console.log("Attendance data submitted successfully");
+    }
+    catch(err)
+    {
+      console.error("Error submitting attendance data:",err);
     }
   };
 
@@ -82,18 +113,17 @@ const Home = () => {
           inline
         />
       )}
-      <button type="submit">Approval Manager</button>
+      <button type="submit" onClick={handleSubmit}>Submit</button>
       <Table dates={dates} onCheckBoxChange={handleCheckboxChange} />
       <SummaryTable
         morningTimeAllowanceCount={morningTimeAllowanceCount}
         afternoonTimeAllowanceCount={afternoonTimeAllowanceCount}
-        nightTimeAllowanceCount={nightTimeAllowanceCount}
       />
     </div>
   );
 };
 
-const Table = ({ dates, onCheckBoxChange }) => {
+const Table = ({ dates, onCheckBoxChange, checkedStatus}) => {
   return (
     <table>
       <thead>
@@ -101,7 +131,6 @@ const Table = ({ dates, onCheckBoxChange }) => {
           <th>Date</th>
           <th>Morning Allowance Time</th>
           <th>Afternoon Allowance Time</th>
-          <th>Night Allowance Time</th>
         </tr>
       </thead>
       <tbody>
@@ -120,12 +149,6 @@ const Table = ({ dates, onCheckBoxChange }) => {
                 onChange={(e) => onCheckBoxChange(e, "afternoon")}
               />
             </td>
-            <td>
-              <input
-                type="checkbox"
-                onChange={(e) => onCheckBoxChange(e, "night")}
-              />
-            </td>
           </tr>
         ))}
       </tbody>
@@ -135,8 +158,7 @@ const Table = ({ dates, onCheckBoxChange }) => {
 
 const SummaryTable = ({
   morningTimeAllowanceCount,
-  afternoonTimeAllowanceCount,
-  nightTimeAllowanceCount,
+  afternoonTimeAllowanceCount
 }) => {
   return (
     <table>
@@ -153,10 +175,6 @@ const SummaryTable = ({
         <tr>
           <td>Afternoon Time Allowance Count</td>
           <td>{afternoonTimeAllowanceCount}</td>
-        </tr>
-        <tr>
-          <td>Night Time Allowance Count</td>
-          <td>{nightTimeAllowanceCount}</td>
         </tr>
       </tbody>
     </table>

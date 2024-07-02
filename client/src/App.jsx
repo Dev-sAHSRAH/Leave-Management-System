@@ -10,6 +10,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Form from "./pages/Form";
 import Footer from "./components/Footer/Footer";
 import { ProfileContent } from "./pages/Profile";
+import Navbar from "./components/Navbar/Navbar";
+import Test from "./pages/Test";
 
 /**
  * Renders information about the signed-in user or a button to retrieve data about the user
@@ -39,13 +41,14 @@ export default function App() {
   return (
     <>
       <BrowserRouter>
+        <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/calendar" element={<Calendar />} />
+          <Route path="/calendar" element={<Test />} />
           <Route path="/form" element={<Form />} />
           <Route path="/profile" element={<ProfileContent />} />
         </Routes>
-        <Footer />
+        {/* <Footer /> */}
       </BrowserRouter>
     </>
   );

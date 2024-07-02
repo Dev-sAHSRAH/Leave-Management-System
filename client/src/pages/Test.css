@@ -1,0 +1,33 @@
+ .weekend {
+    background-color: #4CAF50;
+    color: white;
+  }
+   
+  /* table {
+    width: 100%;
+    border-collapse: collapse;
+  } */
+   
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+   
+  th {
+    background-color: black;
+  }
+   
+  input,
+  select {
+    margin: 0 10px;
+  } 
+  table {
+    margin: 40px auto;
+    width: 75%;
+    border-collapse: collapse;
+    text-align: left; 
+  }
+  
+  

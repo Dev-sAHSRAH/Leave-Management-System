@@ -20,8 +20,11 @@
     "express-session": "^1.18.0",
     "http-errors": "^2.0.0",
     "morgan": "^1.10.0",
+    "mysql2": "^3.10.2",
     "passport": "^0.7.0",
-    "passport-azure-ad": "^4.3.5"
+    "passport-azure-ad": "^4.3.5",
+    "sequelize": "^6.37.3",
+    "tedious": "^18.2.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.4"
