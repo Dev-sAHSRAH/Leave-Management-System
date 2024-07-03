@@ -8,85 +8,94 @@ const logger = require("morgan");
 const session = require("express-session");
 const { PORT } = require("./config/server.config");
 const apiRouter = require("./routes");
-const { Sequelize, DataTypes} = require("sequelize");
-const createCsvWriter = require('csv-writer').createObjectCsvWriter;
-const fs = require('fs');
-const path = require('path');
+const { Sequelize, DataTypes } = require("sequelize");
+const createCsvWriter = require("csv-writer").createObjectCsvWriter;
+const fs = require("fs");
+const path = require("path");
 const app = express();
 
-
-const sequelize = new Sequelize("pro1","root","Vaish@123",
-  {
-    dialect : "mysql",
-    host:"localhost"
-  }
-);
+const sequelize = new Sequelize("mydb", "root", "me@SQL0909", {
+  dialect: "mysql",
+  host: "localhost",
+});
 
 const User = sequelize.define("User", {
   name: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
   },
   email: {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,
     validate: {
-      isEmail: true
-    }
-  }
+      isEmail: true,
+    },
+  },
 });
 
 const getMonthName = (monthNumber) => {
   const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
   return monthNames[monthNumber - 1];
 };
 
 const mapColumnType = (type) => {
   switch (type.toLowerCase()) {
-    case 'varchar':
-    case 'text':
+    case "varchar":
+    case "text":
       return DataTypes.STRING;
-    case 'int':
-    case 'integer':
+    case "int":
+    case "integer":
       return DataTypes.INTEGER;
-    case 'boolean':
+    case "boolean":
       return DataTypes.BOOLEAN;
-    case 'date':
+    case "date":
       return DataTypes.DATE;
-    case 'float':
+    case "float":
       return DataTypes.FLOAT;
-    case 'double':
+    case "double":
       return DataTypes.DOUBLE;
-    case 'decimal':
+    case "decimal":
       return DataTypes.DECIMAL;
-    case 'datetime':
+    case "datetime":
       return DataTypes.DATE;
     default:
-      return DataTypes.STRING; 
+      return DataTypes.STRING;
   }
 };
 
-const LeaveData = sequelize.define("LeaveData",{
-  email : {
-    type : DataTypes.STRING,
+const LeaveData = sequelize.define("LeaveData", {
+  email: {
+    type: DataTypes.STRING,
     allowNull: false,
     unique: false,
     validate: {
       isMicrosoftEmail(value) {
-        if (!value.endsWith('@microsoft.com')) {
-          throw new Error('Only Microsoft email addresses are allowed');
-    }
-  }}},
+        if (!value.endsWith("@microsoft.com")) {
+          throw new Error("Only Microsoft email addresses are allowed");
+        }
+      },
+    },
+  },
   from_date: {
     type: DataTypes.DATE,
     allowNull: false,
     validate: {
-      isDate: true
-    }
+      isDate: true,
+    },
   },
   to_date: {
     type: DataTypes.DATE,
@@ -95,26 +104,33 @@ const LeaveData = sequelize.define("LeaveData",{
       isDate: true,
       isAfterFromDate(value) {
         if (new Date(value) <= new Date(this.from_date)) {
-          throw new Error('To date must be after from date');
+          throw new Error("To date must be after from date");
         }
-      }
-    }
+      },
+    },
   },
   comment: {
     type: DataTypes.STRING,
     allowNull: true,
     validate: {
-      len: [0, 255] 
-    }
-  }
-})
+      len: [0, 255],
+    },
+  },
+});
 
-
-async function createAttendanceTable(monthName, year, username, email, attendance_data) {
+async function createAttendanceTable(
+  monthName,
+  year,
+  username,
+  email,
+  attendance_data
+) {
   const tableName = `${monthName}_${year}`;
 
   // Check if the table already exists
-  const tableExists = await sequelize.getQueryInterface().showAllSchemas()
+  const tableExists = await sequelize
+    .getQueryInterface()
+    .showAllSchemas()
     .then((tableList) => {
       return tableList.some((table) => table.tableName === tableName);
     });
@@ -129,10 +145,10 @@ async function createAttendanceTable(monthName, year, username, email, attendanc
       email: {
         type: DataTypes.STRING,
         allowNull: false,
-      }
+      },
     };
 
-    attendance_data.forEach(record => {
+    attendance_data.forEach((record) => {
       const columnName = `${record.date}/${record.day}`;
       columns[columnName] = {
         type: DataTypes.STRING,
@@ -142,7 +158,7 @@ async function createAttendanceTable(monthName, year, username, email, attendanc
 
     const Attendance = sequelize.define(tableName, columns, {
       timestamps: false,
-      freezeTableName: true
+      freezeTableName: true,
     });
 
     // Sync the model with the database
@@ -153,43 +169,44 @@ async function createAttendanceTable(monthName, year, username, email, attendanc
       email,
     };
 
-    attendance_data.forEach(record => {
+    attendance_data.forEach((record) => {
       const columnName = `${record.date}/${record.day}`;
       rowData[columnName] = record.attendance;
     });
 
     const existingUser = await Attendance.findOne({ where: { email } });
 
-  if (existingUser) {
-    await existingUser.update(rowData);
-  } else {
-    await Attendance.create(rowData);
-  }
+    if (existingUser) {
+      await existingUser.update(rowData);
+    } else {
+      await Attendance.create(rowData);
+    }
   } else {
     console.log(`Table ${tableName} already exists.`);
   }
 }
 
-
 async function exportTableToCSV(tableName, filePath) {
   try {
     // Get the table description to determine columns
-    const tableDesc = await sequelize.getQueryInterface().describeTable(tableName);
+    const tableDesc = await sequelize
+      .getQueryInterface()
+      .describeTable(tableName);
 
     // Define the columns for the model dynamically
     const columns = {};
     for (const [columnName, columnDescription] of Object.entries(tableDesc)) {
-      if (columnName === 'id') {
+      if (columnName === "id") {
         columns[columnName] = {
           type: DataTypes.INTEGER,
           allowNull: false,
           primaryKey: true,
-          autoIncrement: true
+          autoIncrement: true,
         };
       } else {
         columns[columnName] = {
           type: mapColumnType(columnDescription.type),
-          allowNull: columnDescription.allowNull
+          allowNull: columnDescription.allowNull,
         };
       }
     }
@@ -197,7 +214,7 @@ async function exportTableToCSV(tableName, filePath) {
     // Define the model
     const TableModel = sequelize.define(tableName, columns, {
       timestamps: false,
-      freezeTableName: true
+      freezeTableName: true,
     });
 
     // Fetch all data from the table
@@ -211,7 +228,7 @@ async function exportTableToCSV(tableName, filePath) {
     // Define the CSV writer
     const csvWriter = createCsvWriter({
       path: filePath,
-      header: Object.keys(tableData[0]).map(key => ({ id: key, title: key }))
+      header: Object.keys(tableData[0]).map((key) => ({ id: key, title: key })),
     });
 
     // Write data to CSV file
@@ -219,7 +236,7 @@ async function exportTableToCSV(tableName, filePath) {
 
     console.log(`Data from ${tableName} exported to ${filePath}`);
   } catch (error) {
-    console.error('Error exporting table to CSV:', error);
+    console.error("Error exporting table to CSV:", error);
   }
 }
 // sequelize.sync().then(async () => {
@@ -255,30 +272,33 @@ app.get("/users", async (req, res) => {
   }
 });
 
-
-app.post("/api/leave",async(req,res) => {
-  const {email , fromDate , toDate , yourComment} = req.body;
-  try 
-  {
+app.post("/api/leave", async (req, res) => {
+  const { email, fromDate, toDate, yourComment } = req.body;
+  try {
     await LeaveData.upsert({
       email,
-      from_date : fromDate,
-      to_date : toDate,
-      comment : yourComment
+      from_date: fromDate,
+      to_date: toDate,
+      comment: yourComment,
     });
 
     res.status(201).json({ message: "Leave data updated successfully" });
-  } 
-  catch (error) 
-  {
+  } catch (error) {
     console.error("Error updating leave data:", error);
     res.status(500).json({ error: "Error updating leave data" });
   }
-
 });
 
 app.post("/api/test", (req, res) => {
-  const { email, username, month,year, morningTimeAllowanceCount, afternoonTimeAllowanceCount, attendance } = req.body;
+  const {
+    email,
+    username,
+    month,
+    year,
+    morningTimeAllowanceCount,
+    afternoonTimeAllowanceCount,
+    attendance,
+  } = req.body;
 
   console.log("Email:", email);
   console.log("username:", username);
@@ -289,21 +309,17 @@ app.post("/api/test", (req, res) => {
   console.log("Afternoon Time Allowance Count:", afternoonTimeAllowanceCount);
   const attendance_data = attendance;
   console.log("Attendance Data:", attendance_data);
-  try{
+  try {
     createAttendanceTable(monthName, year, username, email, attendance_data);
-    const tableName = 'July_2024';
-    const filePath = 'C:\\Users\\t-rvlnu\\Downloads\\attendance_july_2024.csv';
+    const tableName = "July_2024";
+    const filePath = "C:\\Users\\t-rvlnu\\Downloads\\attendance_july_2024.csv";
     exportTableToCSV(tableName, filePath);
     res.status(200).send("Attendance data received and logged.");
-  }
-  catch (error) {
-    console.error('Error:', error);
+  } catch (error) {
+    console.error("Error:", error);
     res.status(500).send("An error occurred while processing attendance data.");
   }
-  
 });
-
-
 
 app.use(logger("dev"));
 app.use(cookieParser());

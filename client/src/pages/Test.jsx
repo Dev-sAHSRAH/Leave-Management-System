@@ -41,48 +41,49 @@ const Test = () => {
     setAttendance(table);
   };
 
-  
-
   const handleRangeChange = () => {
     const from = new Date(fromDate);
     const to = new Date(toDate);
-  
+
     if (from > to) {
       alert("From date should be earlier than To date");
       return;
     }
-  
+
     const newAttendance = [...attendance];
-  
+
     const start = from.getDate();
     const end = to.getDate();
-  
+
     let morningCount = 0;
     let afternoonCount = 0;
-  
+
     // Calculate the initial counts based on existing attendance
     for (let i = 0; i < newAttendance.length; i++) {
       if (newAttendance[i].attendance === "M" && !newAttendance[i].isWeekend) {
         morningCount++;
-      } else if (newAttendance[i].attendance === "A" && !newAttendance[i].isWeekend) {
+      } else if (
+        newAttendance[i].attendance === "A" &&
+        !newAttendance[i].isWeekend
+      ) {
         afternoonCount++;
       }
     }
-  
+
     // Update attendance and recalculate counts
     for (let i = 0; i < newAttendance.length; i++) {
       const dateParts = newAttendance[i].date.split("-");
       const current = +dateParts[0];
-  
+
       if (current >= start && current <= end && !newAttendance[i].isWeekend) {
         if (newAttendance[i].attendance === "M") {
           morningCount--; // Remove previous count if it was 'M'
         } else if (newAttendance[i].attendance === "A") {
           afternoonCount--; // Remove previous count if it was 'A'
         }
-  
+
         newAttendance[i].attendance = selection;
-  
+
         if (selection === "M") {
           morningCount++;
         } else if (selection === "A") {
@@ -90,12 +91,16 @@ const Test = () => {
         }
       }
     }
-  
+
     setAttendance(newAttendance);
     setMorningTimeAllowanceCount(morningCount);
     setAfternoonTimeAllowanceCount(afternoonCount);
+
+    // Clear the From Date, To Date, and Select Attendance
+    setFromDate("");
+    setToDate("");
+    setSelection("");
   };
-  
 
   const handleAttendanceChange = (index, value) => {
     const newAttendance = [...attendance];
@@ -111,8 +116,14 @@ const Test = () => {
 
   const handleSubmit = async () => {
     try {
+      for (let i = 0; i < attendance.length; ++i) {
+        if (!attendance[i].attendance) {
+          alert(`Value for ${attendance[i].date} cannot be blank`);
+          return;
+        }
+      }
       const firstDate = attendance[0].date;
-      const [, month, year] = firstDate.split('-');
+      const [, month, year] = firstDate.split("-");
       const response = await fetch("http://localhost:3000/api/test", {
         method: "POST",
         headers: {
@@ -120,7 +131,7 @@ const Test = () => {
         },
         body: JSON.stringify({
           email: accounts[0].username,
-          username : accounts[0].name,
+          username: accounts[0].name,
           month,
           year,
           morningTimeAllowanceCount,
@@ -141,48 +152,71 @@ const Test = () => {
 
   return (
     <div>
-      <div>
-        <h5 className="profileContent">Hi, {accounts[0].name}</h5>
-        <label>
-          Select Month:
-          <DatePicker
-            selected={startDate}
-            onChange={handleMonthChange}
-            dateFormat="MM/yyyy"
-            showMonthYearPicker
-          />
-        </label>
+      <div className="container">
+        <h3 className="profileContent">Hi 👋, {accounts[0].name}</h3>
+        <table className="form-table">
+          <tbody>
+            <tr>
+              <td>
+                <strong>Bind Sheet Month:</strong>
+              </td>
+              <td>
+                <DatePicker
+                  selected={startDate}
+                  onChange={handleMonthChange}
+                  dateFormat="MMM-yyyy"
+                  showMonthYearPicker
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <strong>From:</strong>
+              </td>
+              <td>
+                <input
+                  type="date"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <strong>To:</strong>
+              </td>
+              <td>
+                <input
+                  type="date"
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <strong>Shift:</strong>
+              </td>
+              <td>
+                <select
+                  value={selection}
+                  onChange={(e) => setSelection(e.target.value)}
+                >
+                  <option value="">Select</option>
+                  <option value="A">Afternoon (A)</option>
+                  <option value="M">Morning (M)</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td colSpan="2" style={{ textAlign: "center" }}>
+                <button onClick={handleRangeChange}>Update</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <div>
-        <label>
-          From Date:
-          <input
-            type="date"
-            value={fromDate}
-            onChange={(e) => setFromDate(e.target.value)}
-          />
-        </label>
-        <label>
-          To Date:
-          <input
-            type="date"
-            value={toDate}
-            onChange={(e) => setToDate(e.target.value)}
-          />
-        </label>
-        <label>
-          Select Attendance:
-          <select
-            value={selection}
-            onChange={(e) => setSelection(e.target.value)}
-          >
-            <option value="">Select</option>
-            <option value="A">Afternoon (A)</option>
-            <option value="M">Morning (M)</option>
-          </select>
-        </label>
-        <button onClick={handleRangeChange}>Update Attendance</button>
-      </div>
+
       <table>
         <thead>
           <tr>
@@ -198,6 +232,7 @@ const Test = () => {
               <td>{entry.date}</td>
               <td>
                 <input
+                  required
                   type="text"
                   value={entry.attendance}
                   onChange={(e) =>
@@ -213,7 +248,9 @@ const Test = () => {
         morningTimeAllowanceCount={morningTimeAllowanceCount}
         afternoonTimeAllowanceCount={afternoonTimeAllowanceCount}
       />
-      <button onClick={handleSubmit}>Submit Attendance</button>
+      <div className="submit">
+        <button onClick={handleSubmit}>Submit Attendance</button>
+      </div>
     </div>
   );
 };
@@ -223,23 +260,28 @@ const SummaryTable = ({
   afternoonTimeAllowanceCount,
 }) => {
   return (
-    <table>
+    <table className="summary">
       <thead>
         <tr>
-          <th colSpan="2">Work hours Summary</th>
+          <th colSpan="2">Work Hours Summary</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td>Morning Time Allowance Count</td>
-          <td>{morningTimeAllowanceCount}</td>
+          <td>Morning Time Allowance Count:</td>
+          <td>
+            <strong>{morningTimeAllowanceCount}</strong>
+          </td>
         </tr>
         <tr>
-          <td>Afternoon Time Allowance Count</td>
-          <td>{afternoonTimeAllowanceCount}</td>
+          <td>Afternoon Time Allowance Count:</td>
+          <td>
+            <strong>{afternoonTimeAllowanceCount}</strong>
+          </td>
         </tr>
       </tbody>
     </table>
   );
 };
+
 export default Test;

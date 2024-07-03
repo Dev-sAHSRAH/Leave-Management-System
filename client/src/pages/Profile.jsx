@@ -26,16 +26,5 @@ export const ProfileContent = () => {
     RequestProfileData();
   }, []);
 
-  return (
-    <>
-      <h5 className="profileContent">Hi, {accounts[0].name}</h5>
-      {graphData ? (
-        <>
-          <h5 className="profileContent">Your profile:</h5>
-          <ProfileData graphData={graphData} />
-          {}
-        </>
-      ) : null}
-    </>
-  );
+  return <>{graphData ? <ProfileData graphData={graphData} /> : null}</>;
 };

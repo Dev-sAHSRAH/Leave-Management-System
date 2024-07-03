@@ -15,7 +15,7 @@ export const SignOutButton = () => {
     <button
       onClick={() => handleLogout()}
       style={{
-        backgroundColor: "#3F51B5",
+        backgroundColor: "#b34d36",
         borderRadius: "5px",
         alignItems: "center",
         justifyContent: "center",

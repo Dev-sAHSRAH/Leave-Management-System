@@ -15,17 +15,26 @@ const Navbar = () => {
   const isAuthenticated = useIsAuthenticated();
   return (
     <nav className="navbar">
-      <div className="container">
-        <Link to="/profile">
-          <button className="nav-button">View Profile</button>
-        </Link>
-        <Link to="/calendar">
-          <button className="nav-button">Calendar</button>
-        </Link>
+      <div className="group">
+        {location.pathname === "/calendar" ? null : (
+          <Link to="/calendar">
+            <button className="nav-button">
+              <strong>
+                <span style={{ fontSize: "1.5em" }}>📅</span>
+              </strong>
+            </button>
+          </Link>
+        )}
+      </div>
+
+      <div className="group">
         <Link to="/form">
           <button className="nav-button">Apply For Leave</button>
         </Link>
-        <button className="nav-button">Leave History</button>
+
+        <Link to="/profile">
+          <button className="nav-button">View Profile</button>
+        </Link>
         {isAuthenticated ? (
           <SignOutButton />
         ) : (
