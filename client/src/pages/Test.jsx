@@ -41,31 +41,48 @@ const Test = () => {
     setAttendance(table);
   };
 
+  
+
   const handleRangeChange = () => {
     const from = new Date(fromDate);
     const to = new Date(toDate);
-
-    // const start = +fromDate.split("-")[2];
-    // const end = +toDate.split("-")[2];
-
+  
     if (from > to) {
       alert("From date should be earlier than To date");
       return;
     }
-
+  
     const newAttendance = [...attendance];
-
+  
     const start = from.getDate();
     const end = to.getDate();
-
+  
     let morningCount = 0;
     let afternoonCount = 0;
+  
+    // Calculate the initial counts based on existing attendance
+    for (let i = 0; i < newAttendance.length; i++) {
+      if (newAttendance[i].attendance === "M" && !newAttendance[i].isWeekend) {
+        morningCount++;
+      } else if (newAttendance[i].attendance === "A" && !newAttendance[i].isWeekend) {
+        afternoonCount++;
+      }
+    }
+  
+    // Update attendance and recalculate counts
     for (let i = 0; i < newAttendance.length; i++) {
       const dateParts = newAttendance[i].date.split("-");
       const current = +dateParts[0];
-
+  
       if (current >= start && current <= end && !newAttendance[i].isWeekend) {
+        if (newAttendance[i].attendance === "M") {
+          morningCount--; // Remove previous count if it was 'M'
+        } else if (newAttendance[i].attendance === "A") {
+          afternoonCount--; // Remove previous count if it was 'A'
+        }
+  
         newAttendance[i].attendance = selection;
+  
         if (selection === "M") {
           morningCount++;
         } else if (selection === "A") {
@@ -73,19 +90,12 @@ const Test = () => {
         }
       }
     }
-    // for (let i = 0; i < newAttendance.length; i++) {
-    //   const dateParts = newAttendance[i].date.split("-");
-    //   const current = +dateParts[0];
-
-    //   if (current >= start && current <= end && !newAttendance[i].isWeekend) {
-    //     newAttendance[i].attendance = selection;
-    //   }
-    // }
-
+  
     setAttendance(newAttendance);
     setMorningTimeAllowanceCount(morningCount);
     setAfternoonTimeAllowanceCount(afternoonCount);
   };
+  
 
   const handleAttendanceChange = (index, value) => {
     const newAttendance = [...attendance];
@@ -101,6 +111,8 @@ const Test = () => {
 
   const handleSubmit = async () => {
     try {
+      const firstDate = attendance[0].date;
+      const [, month, year] = firstDate.split('-');
       const response = await fetch("http://localhost:3000/api/test", {
         method: "POST",
         headers: {
@@ -108,6 +120,9 @@ const Test = () => {
         },
         body: JSON.stringify({
           email: accounts[0].username,
+          username : accounts[0].name,
+          month,
+          year,
           morningTimeAllowanceCount,
           afternoonTimeAllowanceCount,
           attendance,

@@ -37,6 +37,7 @@ import Test from "./pages/Test";
 //   );
 // };
 
+
 const App = () => {
   const location = useLocation();
 
@@ -49,7 +50,7 @@ const App = () => {
         <Route path="/form" element={<Form />} />
         <Route path="/profile" element={<ProfileContent />} />
       </Routes>
-      <Footer />
+      
     </>
   );
 };
