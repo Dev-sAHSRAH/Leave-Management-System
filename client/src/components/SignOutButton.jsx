@@ -21,7 +21,7 @@ export const SignOutButton = () => {
         justifyContent: "center",
       }}
     >
-      <strong> Sign out</strong>
+      <strong style={{ color: "white" }}> Sign out</strong>
     </button>
   );
 };

@@ -1,6 +1,4 @@
 import { Home } from "./components/Home";
-import Calendar from "./pages/Calendar";
-
 import {
   AuthenticatedTemplate,
   UnauthenticatedTemplate,
@@ -37,7 +35,6 @@ import Test from "./pages/Test";
 //   );
 // };
 
-
 const App = () => {
   const location = useLocation();
 
@@ -50,7 +47,6 @@ const App = () => {
         <Route path="/form" element={<Form />} />
         <Route path="/profile" element={<ProfileContent />} />
       </Routes>
-      
     </>
   );
 };

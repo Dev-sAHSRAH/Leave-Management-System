@@ -1,3 +1,11 @@
+.label-data {
+  width: 100%;
+}
+
+label {
+  margin-bottom: 5px;
+}
+
 .leave-application-container {
   display: flex;
   justify-content: center;

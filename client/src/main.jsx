@@ -6,7 +6,8 @@ import "./index.css";
 import { PublicClientApplication } from "@azure/msal-browser";
 import { MsalProvider } from "@azure/msal-react";
 import { msalConfig } from "./authConfig";
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 // Bootstrap components
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -22,6 +23,20 @@ root.render(
   <React.StrictMode>
     <MsalProvider instance={msalInstance}>
       <App />
+      <ToastContainer
+        position="top-left"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        bodyClassName="toastbody"
+        theme="colored"
+        transition:Bounce
+      />
     </MsalProvider>
   </React.StrictMode>
 );

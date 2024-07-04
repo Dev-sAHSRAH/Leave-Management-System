@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./Test.css";
-import { useIsAuthenticated, useMsal } from "@azure/msal-react";
+import { useMsal } from "@azure/msal-react";
+import { toast } from "react-toastify";
 
 const Test = () => {
   const { accounts } = useMsal();
@@ -46,7 +47,7 @@ const Test = () => {
     const to = new Date(toDate);
 
     if (from > to) {
-      alert("From date should be earlier than To date");
+      toast.error("From date should be earlier than To date");
       return;
     }
 
@@ -88,6 +89,9 @@ const Test = () => {
           morningCount++;
         } else if (selection === "A") {
           afternoonCount++;
+        } else {
+          toast.error("Invalid Shift Selection");
+          return;
         }
       }
     }
@@ -118,7 +122,7 @@ const Test = () => {
     try {
       for (let i = 0; i < attendance.length; ++i) {
         if (!attendance[i].attendance) {
-          alert(`Value for ${attendance[i].date} cannot be blank`);
+          toast.error(`Value for ${attendance[i].date} cannot be blank`);
           return;
         }
       }
@@ -141,13 +145,32 @@ const Test = () => {
       });
 
       if (!response.ok) {
+        toast.error("Failed to submit attendance data");
         throw new Error("Failed to submit attendance data");
       }
 
-      console.log("Attendance data submitted successfully");
+      toast.success("Data submitted successfully");
     } catch (err) {
-      console.error("Error submitting attendance data:", err);
+      toast.error("Error submitting attendance data:", err);
     }
+  };
+
+  // Get current and previous month range
+  const today = new Date();
+  const currentMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const previousMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+
+  // Get min and max dates based on selected month
+  const getMinDateForInput = () => {
+    return new Date(startDate.getFullYear(), startDate.getMonth(), 2)
+      .toISOString()
+      .split("T")[0];
+  };
+
+  const getMaxDateForInput = () => {
+    return new Date(startDate.getFullYear(), startDate.getMonth() + 1)
+      .toISOString()
+      .split("T")[0];
   };
 
   return (
@@ -166,6 +189,8 @@ const Test = () => {
                   onChange={handleMonthChange}
                   dateFormat="MMM-yyyy"
                   showMonthYearPicker
+                  minDate={previousMonth}
+                  maxDate={currentMonth}
                 />
               </td>
             </tr>
@@ -178,6 +203,8 @@ const Test = () => {
                   type="date"
                   value={fromDate}
                   onChange={(e) => setFromDate(e.target.value)}
+                  min={getMinDateForInput()}
+                  max={getMaxDateForInput()}
                 />
               </td>
             </tr>
@@ -190,6 +217,8 @@ const Test = () => {
                   type="date"
                   value={toDate}
                   onChange={(e) => setToDate(e.target.value)}
+                  min={getMinDateForInput()}
+                  max={getMaxDateForInput()}
                 />
               </td>
             </tr>
@@ -249,7 +278,9 @@ const Test = () => {
         afternoonTimeAllowanceCount={afternoonTimeAllowanceCount}
       />
       <div className="submit">
-        <button onClick={handleSubmit}>Submit Attendance</button>
+        <button onClick={handleSubmit}>
+          <strong>Submit</strong>
+        </button>
       </div>
     </div>
   );

@@ -1,15 +1,21 @@
-/* Test.css */
 .weekend {
-  background-color: #4caf50;
+  background-color: #b34d36;
   color: white;
 }
+
+button {
+  background-color: #45a049;
+  border: none;
+  color: white;
+}
+
 .profileContent {
   margin: 20px 0 0 0;
 }
 
 th,
 td {
-  border: 1px solid #ddd;
+  border: 1px solid #ddd !important;
   padding: 8px;
   text-align: center;
 }

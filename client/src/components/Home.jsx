@@ -27,7 +27,7 @@ export const Home = (props) => {
     >
       <div
         style={{
-          border: "1px solid #303F9F",
+          border: "1px solid #ABCEF0",
           padding: "20px",
           borderRadius: "5px",
           textAlign: "center",

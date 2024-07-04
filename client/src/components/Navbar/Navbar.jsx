@@ -47,7 +47,7 @@ const Navbar = () => {
             }}
             onClick={() => handleLogin()}
           >
-            <strong>Sign in</strong>
+            <strong style={{ color: "White" }}>Sign in</strong>
           </button>
         )}
       </div>

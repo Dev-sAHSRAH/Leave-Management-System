@@ -18,7 +18,7 @@ const Form = () => {
     From: ${fromDate}
     To: ${toDate}
     Comment: ${yourComment}`;
-    const recipientEmail = "recipient@example.com"; // Replace with recipient's email address
+    const recipientEmail = "abc@xyz.com"; // Replace with recipient's email address
 
     const mailtoLink = `mailto:${recipientEmail}?subject=${encodeURIComponent(
       subject
@@ -37,7 +37,7 @@ const Form = () => {
         <h2>Leave Application</h2>
         <div className="form-group">
           <label>
-            From Date:
+            <div className="label-data">From:</div>
             <input
               type="date"
               value={fromDate}
@@ -46,7 +46,7 @@ const Form = () => {
             />
           </label>
           <label>
-            To Date:
+            <div className="label-data">To:</div>
             <input
               type="date"
               value={toDate}

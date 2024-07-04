@@ -28,7 +28,7 @@ export const SignInButton = () => {
         style={{ marginRight: "10px" }}
         width="50px"
       />
-      <strong> Sign in with Microsoft</strong>
+      <strong style={{ color: "White" }}> Sign in with Microsoft</strong>
     </button>
   );
 };
